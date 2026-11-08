@@ -569,7 +569,7 @@ export const CustomerProfile: React.FC<Props> = ({ onOpenLogin, onExploreCatalog
                     <div>
                       <h4 className="text-xs font-bold text-slate-900 truncate">{med.name}</h4>
                       <p className="text-[11px] text-slate-500">{med.brand} · {med.dosageForm}</p>
-                      <span className="text-xs font-bold text-sky-600">${med.price.toFixed(2)}</span>
+                      <span className="text-xs font-bold text-sky-600">₱{med.price.toFixed(2)}</span>
                     </div>
                   </div>
                   <button

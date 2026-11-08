@@ -165,7 +165,7 @@ export const OrderTrackingView: React.FC<Props> = ({ initialOrderId, onExploreCa
           >
             {orders.map((o) => (
               <option key={o.id} value={o.id}>
-                #{o.orderNumber} ({o.status}) - ${o.total.toFixed(2)}
+                #{o.orderNumber} ({o.status}) - ₱{o.total.toFixed(2)}
               </option>
             ))}
           </select>
@@ -201,7 +201,7 @@ export const OrderTrackingView: React.FC<Props> = ({ initialOrderId, onExploreCa
               </button>
             )}
             <span className="text-sm font-extrabold text-slate-900 tabular-nums">
-              ${order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₱{order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>
@@ -337,7 +337,7 @@ export const OrderTrackingView: React.FC<Props> = ({ initialOrderId, onExploreCa
                     <span className="text-slate-500 text-[11px]">{it.brand} · Qty: {it.quantity}</span>
                   </div>
                   <span className="font-extrabold text-slate-900 tabular-nums">
-                    ${(it.price * it.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ₱{(it.price * it.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
               ))}

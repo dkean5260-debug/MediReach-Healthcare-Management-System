@@ -383,7 +383,7 @@ export const StaffPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
                           <StatusBadge status={ord.status} />
                         </div>
                         <p className="text-[11px] text-slate-500 mt-0.5">
-                          {ord.customerName} · {ord.items.length} items · ${ord.total.toFixed(2)}
+                          {ord.customerName} · {ord.items.length} items · ₱{ord.total.toFixed(2)}
                         </p>
                       </div>
                       <button className="px-2.5 py-1 text-xs font-semibold text-sky-700 bg-sky-50 rounded-lg">
@@ -496,7 +496,7 @@ export const StaffPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
                           {ord.items.map((it) => `${it.name} (x${it.quantity})`).join(', ')}
                         </span>
                       </td>
-                      <td className="p-3.5 font-bold tabular-nums">${ord.total.toFixed(2)}</td>
+                      <td className="p-3.5 font-bold tabular-nums">₱{ord.total.toFixed(2)}</td>
                       <td className="p-3.5">
                         {ord.coldChainAssurance ? (
                           <ColdChainBadge temp={ord.currentTemp} />
@@ -848,7 +848,7 @@ export const StaffPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
                           <span className="text-[11px] text-slate-400">{med.brand} · {med.dosageForm}</span>
                         </td>
                         <td className="p-3.5">{med.category}</td>
-                        <td className="p-3.5 font-bold tabular-nums">${med.price.toFixed(2)}</td>
+                        <td className="p-3.5 font-bold tabular-nums">₱{med.price.toFixed(2)}</td>
                         <td className="p-3.5">
                           {med.coldChain ? <ColdChainBadge /> : <span className="text-slate-500">Room Temp</span>}
                         </td>
@@ -967,7 +967,7 @@ export const StaffPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-2">
               <span className="text-xs text-slate-500 font-semibold block">Today's Total Sales</span>
               <span className="text-2xl font-black text-slate-900 tabular-nums">
-                ${reportsData.todaySales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{reportsData.todaySales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-xs text-slate-500">
                 {reportsData.todayOrdersCount} orders placed today across rare therapeutic categories.

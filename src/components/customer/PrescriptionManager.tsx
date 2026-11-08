@@ -12,12 +12,10 @@ import {
   Calendar,
   Eye,
   Plus,
-  Stethoscope,
 } from 'lucide-react';
 import { Prescription } from '../../types/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { StatusBadge } from '../ui/Badge.tsx';
-import { DoctorPrescribeModal } from '../doctor/DoctorPrescribeModal.tsx';
 
 interface Props {
   onOpenLogin: () => void;
@@ -27,7 +25,6 @@ export const PrescriptionManager: React.FC<Props> = ({ onOpenLogin }) => {
   const { user, token } = useAuth();
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showDoctorModal, setShowDoctorModal] = useState(false);
   const [previewRx, setPreviewRx] = useState<Prescription | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -154,74 +151,47 @@ export const PrescriptionManager: React.FC<Props> = ({ onOpenLogin }) => {
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">Prescription Management</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Electronic physician e-prescriptions &amp; certified pharmacist verification records
+            Submit medical prescriptions for certified licensed pharmacist review
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <button
-            onClick={() => setShowDoctorModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-sky-700 to-indigo-700 hover:from-sky-800 hover:to-indigo-800 text-white text-xs font-bold rounded-xl shadow-xs active:scale-95 transition-all"
-          >
-            <Stethoscope className="w-4 h-4 text-sky-200" />
-            <span>Doctor E-Prescribing Pad</span>
-          </button>
-          <button
-            onClick={() => setShowUploadModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 shadow-2xs active:scale-95 transition-all"
-          >
-            <Plus className="w-4 h-4 text-sky-600" />
-            <span>Upload Patient Doc</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-xs active:scale-95 transition-all self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Upload Prescription Document</span>
+        </button>
       </div>
 
-      {/* Info Banner with Doctor direct issuing explanation */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-sky-50 via-sky-50 to-indigo-50 border border-sky-200 text-xs text-sky-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
-          <div className="space-y-0.5">
-            <span className="font-bold">Dual E-Prescription System:</span>
-            <p className="text-sky-800 leading-relaxed text-[11px]">
-              Doctors can digitally issue e-prescriptions directly through the <strong>Doctor E-Prescribing Pad</strong>, or patients can upload physical doctor prescription scans for licensed pharmacist board verification.
-            </p>
-          </div>
+      {/* Info Banner */}
+      <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-950 flex items-start gap-3">
+        <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <span className="font-bold">Fast Verification Process:</span>
+          <p className="text-sky-800 leading-relaxed">
+            Our licensed pharmacists verify doctor medical license numbers, clinical indications, and dosage forms within 2 hours. Once marked <span className="font-semibold text-emerald-700">"Approved"</span>, you can place orders for restricted orphan therapies.
+          </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowDoctorModal(true)}
-          className="shrink-0 text-xs font-bold text-indigo-700 hover:text-indigo-800 underline decoration-indigo-300"
-        >
-          Open Doctor Prescribing Studio &rarr;
-        </button>
       </div>
 
       {/* Prescriptions List */}
       {loading ? (
         <div className="py-12 text-center text-xs text-slate-400">Loading prescription records...</div>
       ) : prescriptions.length === 0 ? (
-        <div className="py-16 text-center bg-white rounded-2xl border border-slate-200 p-8 space-y-4">
+        <div className="py-16 text-center bg-white rounded-2xl border border-slate-200 p-8 space-y-3">
           <FileUp className="w-10 h-10 mx-auto text-slate-300 stroke-1" />
           <div className="max-w-md mx-auto space-y-1">
-            <h3 className="text-sm font-semibold text-slate-800">No prescriptions recorded yet</h3>
+            <h3 className="text-sm font-semibold text-slate-800">No prescriptions uploaded yet</h3>
             <p className="text-xs text-slate-500">
-              Have your doctor issue a direct electronic prescription, or upload your physical prescription document.
+              Upload your physician's prescription to enable ordering of prescription-only rare medicines.
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            <button
-              onClick={() => setShowDoctorModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-sky-700 to-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-1.5"
-            >
-              <Stethoscope className="w-3.5 h-3.5" />
-              <span>Use Doctor E-Prescribing Pad</span>
-            </button>
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="px-4 py-2 bg-white text-slate-700 border border-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-50"
-            >
-              Upload Patient Document
-            </button>
-          </div>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-xs"
+          >
+            Upload Prescription Document
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -487,16 +457,6 @@ export const PrescriptionManager: React.FC<Props> = ({ onOpenLogin }) => {
           </div>
         </div>
       )}
-
-      {/* Doctor E-Prescribing Studio Modal */}
-      <DoctorPrescribeModal
-        isOpen={showDoctorModal}
-        onClose={() => setShowDoctorModal(false)}
-        onPrescriptionIssued={() => {
-          setShowDoctorModal(false);
-          fetchPrescriptions();
-        }}
-      />
     </div>
   );
 };

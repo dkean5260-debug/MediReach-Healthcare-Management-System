@@ -391,15 +391,15 @@ export const CheckoutModal: React.FC<Props> = ({ isOpen, onClose, onOrderPlaced,
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
             <div className="flex justify-between">
               <span className="text-slate-500">Items Subtotal:</span>
-              <span className="font-semibold text-slate-900 tabular-nums">${subtotal.toFixed(2)}</span>
+              <span className="font-semibold text-slate-900 tabular-nums">₱{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Refrigerated Logistics:</span>
-              <span className="font-semibold text-slate-900 tabular-nums">${(deliveryFee + coldChainFee).toFixed(2)}</span>
+              <span className="font-semibold text-slate-900 tabular-nums">₱{(deliveryFee + coldChainFee).toFixed(2)}</span>
             </div>
             <div className="pt-2 border-t border-slate-200 flex justify-between text-sm font-extrabold text-slate-900">
               <span>Total Payable:</span>
-              <span className="tabular-nums">${total.toFixed(2)}</span>
+              <span className="tabular-nums">₱{total.toFixed(2)}</span>
             </div>
           </div>
         </div>

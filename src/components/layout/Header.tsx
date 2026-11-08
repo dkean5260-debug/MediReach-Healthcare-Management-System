@@ -22,7 +22,6 @@ interface Props {
   onOpenLogin: () => void;
   onOpenNotifications: () => void;
   onOpenCart: () => void;
-  onOpenDoctorPrescribe?: () => void;
 }
 
 export const Header: React.FC<Props> = ({
@@ -33,9 +32,8 @@ export const Header: React.FC<Props> = ({
   onOpenLogin,
   onOpenNotifications,
   onOpenCart,
-  onOpenDoctorPrescribe,
 }) => {
-  const { user, logout, quickDemoLogin } = useAuth();
+  const { user, logout } = useAuth();
   const { itemCount } = useCart();
   const [unreadCount, setUnreadCount] = useState(2);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -223,18 +221,6 @@ export const Header: React.FC<Props> = ({
             )}
           </button>
 
-          {/* Doctor E-Prescribing Studio Button */}
-          {onOpenDoctorPrescribe && (
-            <button
-              onClick={onOpenDoctorPrescribe}
-              title="Doctor E-Prescribing Studio - Issue Verified Digital Rx"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors whitespace-nowrap shrink-0"
-            >
-              <Stethoscope className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="hidden sm:inline">Doctor E-Rx</span>
-            </button>
-          )}
-
           {/* Cart Icon (Customers & Guest) */}
           {(!user || user.role === 'customer') && (
             <button
@@ -354,52 +340,7 @@ export const Header: React.FC<Props> = ({
                     )}
                   </div>
 
-                  {/* Switch Role Quick Tester */}
-                  <div className="px-3 py-2 bg-slate-50 border-t border-b border-slate-100">
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Switch Role (Demo):
-                    </p>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => {
-                          quickDemoLogin('customer');
-                          setActiveTab('home');
-                          setShowRoleMenu(false);
-                        }}
-                        className={`flex-1 py-1 text-[10px] font-medium rounded ${
-                          user.role === 'customer' ? 'bg-sky-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
-                        }`}
-                      >
-                        Customer
-                      </button>
-                      <button
-                        onClick={() => {
-                          quickDemoLogin('staff');
-                          setActiveTab('staff_dashboard');
-                          setShowRoleMenu(false);
-                        }}
-                        className={`flex-1 py-1 text-[10px] font-medium rounded ${
-                          user.role === 'staff' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
-                        }`}
-                      >
-                        Staff
-                      </button>
-                      <button
-                        onClick={() => {
-                          quickDemoLogin('admin');
-                          setActiveTab('admin_dashboard');
-                          setShowRoleMenu(false);
-                        }}
-                        className={`flex-1 py-1 text-[10px] font-medium rounded ${
-                          user.role === 'admin' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
-                        }`}
-                      >
-                        Admin
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="pt-1">
+                  <div className="pt-1 border-t border-slate-100">
                     <button
                       onClick={() => {
                         logout();

@@ -153,7 +153,7 @@ export const CartView: React.FC<Props> = ({ onOpenCheckout, onOpenRxUpload, onEx
                 <h3 className="text-sm font-bold text-slate-900 mt-0.5">{medicine.name}</h3>
                 <p className="text-xs text-slate-500 font-mono">{medicine.dosageForm}</p>
                 <span className="text-xs font-semibold text-slate-700 mt-1 block">
-                  ${medicine.price.toLocaleString('en-US', { minimumFractionDigits: 2 })} each
+                  ₱{medicine.price.toLocaleString('en-US', { minimumFractionDigits: 2 })} each
                 </span>
               </div>
             </div>
@@ -181,7 +181,7 @@ export const CartView: React.FC<Props> = ({ onOpenCheckout, onOpenRxUpload, onEx
 
               {/* Item Subtotal */}
               <span className="text-sm font-bold text-slate-900 tabular-nums w-24 text-right">
-                ${(medicine.price * quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{(medicine.price * quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
 
               {/* Remove */}
@@ -206,7 +206,7 @@ export const CartView: React.FC<Props> = ({ onOpenCheckout, onOpenRxUpload, onEx
           <div className="flex justify-between">
             <span>Medicines Subtotal</span>
             <span className="font-semibold text-slate-900 tabular-nums">
-              ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₱{subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
           </div>
 
@@ -214,9 +214,9 @@ export const CartView: React.FC<Props> = ({ onOpenCheckout, onOpenRxUpload, onEx
             <span>Standard Courier Delivery</span>
             <span className="font-semibold text-slate-900 tabular-nums">
               {deliveryFee === 0 ? (
-                <span className="text-emerald-600">FREE (Orders &gt; $1,000)</span>
+                <span className="text-emerald-600">FREE (Orders &gt; ₱500)</span>
               ) : (
-                `$${deliveryFee.toFixed(2)}`
+                `₱${deliveryFee.toFixed(2)}`
               )}
             </span>
           </div>
@@ -227,14 +227,14 @@ export const CartView: React.FC<Props> = ({ onOpenCheckout, onOpenRxUpload, onEx
                 <ThermometerSnowflake className="w-3.5 h-3.5 text-cyan-600" />
                 CryoSafe 2°C - 8°C Thermal Shipper & IoT Monitoring
               </span>
-              <span className="font-bold tabular-nums">${coldChainFee.toFixed(2)}</span>
+              <span className="font-bold tabular-nums">₱{coldChainFee.toFixed(2)}</span>
             </div>
           )}
 
           <div className="pt-3 border-t border-slate-100 flex justify-between items-baseline text-sm">
             <span className="font-bold text-slate-900">Total Order Amount</span>
             <span className="text-xl font-extrabold text-slate-900 tabular-nums">
-              ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₱{total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>

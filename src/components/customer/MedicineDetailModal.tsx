@@ -21,15 +21,9 @@ interface Props {
   medicine: Medicine | null;
   onClose: () => void;
   onOpenRxUpload: () => void;
-  onOpenDoctorPrescribe?: (med: Medicine) => void;
 }
 
-export const MedicineDetailModal: React.FC<Props> = ({
-  medicine,
-  onClose,
-  onOpenRxUpload,
-  onOpenDoctorPrescribe,
-}) => {
+export const MedicineDetailModal: React.FC<Props> = ({ medicine, onClose, onOpenRxUpload }) => {
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const [quantity, setQuantity] = useState(1);
@@ -151,7 +145,7 @@ export const MedicineDetailModal: React.FC<Props> = ({
                 <span className="text-[11px] text-slate-400 block font-medium">Verified Pharmacy Price</span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-extrabold text-slate-900 tabular-nums">
-                    ${medicine.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ₱{medicine.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                   <span className="text-xs text-slate-500">per unit</span>
                 </div>
@@ -248,35 +242,21 @@ export const MedicineDetailModal: React.FC<Props> = ({
               </button>
             </div>
             <span className="text-xs font-extrabold text-slate-900 tabular-nums">
-              Subtotal: ${(medicine.price * quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              Subtotal: ₱{(medicine.price * quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             {medicine.requiresPrescription && (
-              <>
-                {onOpenDoctorPrescribe && (
-                  <button
-                    onClick={() => {
-                      onClose();
-                      onOpenDoctorPrescribe(medicine);
-                    }}
-                    className="px-3 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition-colors flex items-center gap-1"
-                  >
-                    <Stethoscope className="w-3.5 h-3.5" />
-                    <span>Doctor E-Prescribe</span>
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    onClose();
-                    onOpenRxUpload();
-                  }}
-                  className="px-3 py-2 text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 rounded-xl hover:bg-sky-100 transition-colors"
-                >
-                  Upload Rx
-                </button>
-              </>
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenRxUpload();
+                }}
+                className="px-3 py-2 text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 rounded-xl hover:bg-sky-100 transition-colors"
+              >
+                Upload Rx
+              </button>
             )}
             <button
               onClick={handleAdd}

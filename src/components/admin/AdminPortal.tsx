@@ -337,10 +337,10 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
   const handleExportCSV = () => {
     if (!financialData) return;
     const rows = [
-      ['Date', 'Revenue ($)'],
+      ['Date', 'Revenue (₱)'],
       ...(financialData.dailyTrend || []).map((t: any) => [t.date, t.amount.toFixed(2)]),
       ['', ''],
-      ['Medicine', 'Brand', 'Units Sold', 'Total Sales ($)'],
+      ['Medicine', 'Brand', 'Units Sold', 'Total Sales (₱)'],
       ...(financialData.topSellingMedicines || []).map((m: any) => [m.name, m.brand, m.unitsSold, m.totalSales.toFixed(2)]),
     ];
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.join(',')).join('\n');
@@ -403,7 +403,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
 
         <div className="flex items-center gap-2 self-start sm:self-auto text-xs font-mono text-emerald-200 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
           <DollarSign className="w-4 h-4 text-emerald-400" />
-          <span>Total Sales: ${overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          <span>Total Sales: ₱{overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
         </div>
       </div>
 
@@ -443,7 +443,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-1">
               <span className="text-[11px] font-semibold text-slate-500 block">Total Revenue</span>
               <span className="text-2xl font-black text-slate-900 tabular-nums">
-                ${overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <span className="text-[10px] text-emerald-700 block font-semibold">+18.4% this quarter</span>
             </div>
@@ -831,7 +831,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
                         <span className="text-[11px] text-slate-400">{m.brand} · {m.dosageForm}</span>
                       </td>
                       <td className="p-3.5">{m.category}</td>
-                      <td className="p-3.5 font-bold tabular-nums">${m.price.toFixed(2)}</td>
+                      <td className="p-3.5 font-bold tabular-nums">₱{m.price.toFixed(2)}</td>
                       <td className="p-3.5 font-bold tabular-nums">{m.stock} units</td>
                       <td className="p-3.5">{m.requiresPrescription ? <RxBadge /> : <span className="text-slate-400">OTC</span>}</td>
                       <td className="p-3.5">{m.coldChain ? <ColdChainBadge /> : <span className="text-slate-400">Ambient</span>}</td>
@@ -951,7 +951,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Price ($ USD)</label>
+                  <label className="font-semibold text-slate-700 block mb-1">Price (₱ PHP)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1058,7 +1058,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-1">
               <span className="text-xs text-slate-500 block">Total Pharmacy Revenue</span>
               <span className="text-3xl font-black text-slate-900 tabular-nums">
-                ${financialData.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{financialData.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-[11px] text-slate-400 mt-1">From {financialData.orderCount} completed & active orders</p>
             </div>
@@ -1066,7 +1066,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-1">
               <span className="text-xs text-slate-500 block">Prescription-Only Biologics</span>
               <span className="text-3xl font-black text-indigo-700 tabular-nums">
-                ${financialData.totalPrescriptionSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{financialData.totalPrescriptionSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-[11px] text-indigo-500 mt-1">Verified against doctor licenses</p>
             </div>
@@ -1074,7 +1074,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-1">
               <span className="text-xs text-slate-500 block">CryoSafe Cold-Chain Orders</span>
               <span className="text-3xl font-black text-cyan-700 tabular-nums">
-                ${financialData.totalColdChainSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ₱{financialData.totalColdChainSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-[11px] text-cyan-500 mt-1">100% within 2°C to 8°C compliance</p>
             </div>
@@ -1093,7 +1093,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
                     <span className="text-[11px] text-slate-500">{m.brand} · {m.unitsSold} units dispensed</span>
                   </div>
                   <span className="text-sm font-extrabold text-slate-900 tabular-nums">
-                    ${m.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ₱{m.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
               ))}
@@ -1230,7 +1230,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Standard Delivery Fee ($)</label>
+              <label className="font-semibold text-slate-700 block mb-1">Standard Delivery Fee (₱)</label>
               <input
                 type="number"
                 step="0.01"
@@ -1240,7 +1240,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
               />
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Cold-Chain Shipper Fee ($)</label>
+              <label className="font-semibold text-slate-700 block mb-1">Cold-Chain Shipper Fee (₱)</label>
               <input
                 type="number"
                 step="0.01"
@@ -1250,7 +1250,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
               />
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Free Shipping Min ($)</label>
+              <label className="font-semibold text-slate-700 block mb-1">Free Shipping Min (₱)</label>
               <input
                 type="number"
                 step="0.01"

@@ -15,7 +15,6 @@ import { StaffPortal } from './components/staff/StaffPortal.tsx';
 import { AdminPortal } from './components/admin/AdminPortal.tsx';
 import { UnifiedAuthScreen } from './components/auth/UnifiedAuthScreen.tsx';
 import { NotificationDrawer } from './components/notifications/NotificationDrawer.tsx';
-import { DoctorPrescribeModal } from './components/doctor/DoctorPrescribeModal.tsx';
 import { Medicine, Order } from './types/index.ts';
 import { ShieldAlert, Smartphone, Monitor } from 'lucide-react';
 
@@ -31,8 +30,6 @@ function MediReachMain() {
   // Modals
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
-  const [doctorPrescribeModalOpen, setDoctorPrescribeModalOpen] = useState(false);
-  const [doctorPrescribeMedicine, setDoctorPrescribeMedicine] = useState<Medicine | null>(null);
 
   // If user is not logged in and not guest browsing, or if activeTab is 'login', show the one login process
   const isLoginPage = activeTab === 'login' || (!user && !guestBrowsing);
@@ -84,10 +81,6 @@ function MediReachMain() {
         onOpenLogin={() => setActiveTab('login')}
         onOpenNotifications={() => setNotificationsOpen(true)}
         onOpenCart={() => setActiveTab('cart')}
-        onOpenDoctorPrescribe={() => {
-          setDoctorPrescribeMedicine(null);
-          setDoctorPrescribeModalOpen(true);
-        }}
       />
 
       {/* Main Container: Mobile Frame vs Wide Canvas */}
@@ -232,11 +225,6 @@ function MediReachMain() {
         medicine={selectedMedicine}
         onClose={() => setSelectedMedicine(null)}
         onOpenRxUpload={handleOpenRxUpload}
-        onOpenDoctorPrescribe={(med) => {
-          setSelectedMedicine(null);
-          setDoctorPrescribeMedicine(med);
-          setDoctorPrescribeModalOpen(true);
-        }}
       />
 
       <CheckoutModal
@@ -244,16 +232,6 @@ function MediReachMain() {
         onClose={() => setCheckoutModalOpen(false)}
         onOrderPlaced={handleOrderPlaced}
         onOpenLogin={() => setActiveTab('login')}
-      />
-
-      <DoctorPrescribeModal
-        isOpen={doctorPrescribeModalOpen}
-        preSelectedMedicine={doctorPrescribeMedicine}
-        onClose={() => setDoctorPrescribeModalOpen(false)}
-        onPrescriptionIssued={(rx) => {
-          setDoctorPrescribeModalOpen(false);
-          setActiveTab('prescriptions');
-        }}
       />
     </div>
   );

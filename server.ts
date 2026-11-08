@@ -415,252 +415,6 @@ app.post('/api/customer/prescriptions', authenticate, requireRole(['customer']),
   res.status(201).json({ prescription: newRx });
 });
 
-// Helper to escape XML in generated SVG
-function escapeXml(unsafe: string): string {
-  return String(unsafe || '').replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-      default: return c;
-    }
-  });
-}
-
-function generatePrescriptionSvg(data: {
-  rxId: string;
-  doctorName: string;
-  clinicHospital: string;
-  licenseRegNo: string;
-  deaNumber?: string;
-  customerName: string;
-  diagnosis?: string;
-  medicineName: string;
-  dosageInstructions: string;
-  quantityPrescribed: number;
-  refillsAuthorized: number;
-  issueDate: string;
-  digitalSignature: string;
-}): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1050" width="800" height="1050">
-    <defs>
-      <pattern id="rx-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-      </pattern>
-      <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#0284c7" />
-        <stop offset="100%" stop-color="#0369a1" />
-      </linearGradient>
-    </defs>
-    
-    <rect width="800" height="1050" fill="#ffffff" />
-    <rect width="800" height="1050" fill="url(#rx-grid)" opacity="0.6"/>
-    <rect x="25" y="25" width="750" height="1000" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-    <rect x="35" y="35" width="730" height="980" rx="12" fill="none" stroke="#0284c7" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
-
-    <text x="400" y="580" font-family="sans-serif" font-size="64" font-weight="900" fill="#0284c7" opacity="0.04" text-anchor="middle" transform="rotate(-30 400 580)">OFFICIAL e-PRESCRIPTION</text>
-
-    <path d="M 25 25 Q 25 25 25 41 L 25 150 L 775 150 L 775 41 Q 775 25 759 25 Z" fill="url(#headerGrad)"/>
-    
-    <circle cx="90" cy="85" r="32" fill="#ffffff" opacity="0.2"/>
-    <path d="M 90 65 L 90 105 M 70 85 L 110 85" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
-
-    <text x="140" y="75" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" letter-spacing="0.5">MEDIREACH CLINICAL HEALTH NETWORK</text>
-    <text x="140" y="100" font-family="sans-serif" font-size="14" fill="#e0f2fe">${escapeXml(data.clinicHospital)}</text>
-    <text x="140" y="122" font-family="sans-serif" font-size="11" fill="#bae6fd">OFFICIAL ELECTRONIC MEDICAL DISPENSING ORDER · TELEHEALTH &amp; RARE BIOLOGICS DIVISION</text>
-
-    <rect x="60" y="170" width="680" height="42" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
-    <text x="80" y="196" font-family="monospace" font-size="12" font-weight="bold" fill="#334155">RX NO: <tspan fill="#0284c7">${escapeXml(data.rxId)}</tspan></text>
-    <text x="400" y="196" font-family="sans-serif" font-size="12" fill="#64748b">DATE ISSUED: <tspan font-weight="bold" fill="#0f172a">${escapeXml(data.issueDate)}</tspan></text>
-    <text x="620" y="196" font-family="sans-serif" font-size="11" font-weight="bold" fill="#16a34a">VERIFIED e-Rx</text>
-
-    <rect x="60" y="230" width="330" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
-    <rect x="60" y="230" width="330" height="30" rx="10" fill="#f1f5f9"/>
-    <text x="75" y="250" font-family="sans-serif" font-size="11" font-weight="bold" fill="#475569" letter-spacing="0.5">PRESCRIBING PHYSICIAN</text>
-    <text x="75" y="285" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0f172a">${escapeXml(data.doctorName)}</text>
-    <text x="75" y="308" font-family="sans-serif" font-size="12" fill="#475569">State License: <tspan font-family="monospace" font-weight="bold" fill="#0369a1">${escapeXml(data.licenseRegNo)}</tspan></text>
-    <text x="75" y="328" font-family="sans-serif" font-size="12" fill="#475569">DEA Registration: <tspan font-family="monospace" font-weight="bold" fill="#334155">${escapeXml(data.deaNumber || 'DEA-ORPHAN-EXEMPT')}</tspan></text>
-    <text x="75" y="348" font-family="sans-serif" font-size="11" fill="#64748b">Clinical Specialty: Rare Disease &amp; Genetic Therapeutics</text>
-
-    <rect x="410" y="230" width="330" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
-    <rect x="410" y="230" width="330" height="30" rx="10" fill="#f1f5f9"/>
-    <text x="425" y="250" font-family="sans-serif" font-size="11" font-weight="bold" fill="#475569" letter-spacing="0.5">PATIENT RECORD</text>
-    <text x="425" y="285" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0f172a">${escapeXml(data.customerName)}</text>
-    <text x="425" y="308" font-family="sans-serif" font-size="12" fill="#475569">Clinical Indication / Diagnosis:</text>
-    <text x="425" y="328" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0369a1">${escapeXml(data.diagnosis || 'Specialized Genetic/Immune Indication')}</text>
-    <text x="425" y="352" font-family="sans-serif" font-size="11" fill="#64748b">Verification Status: Confirmed Patient ID</text>
-
-    <rect x="60" y="405" width="680" height="360" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-    
-    <text x="90" y="475" font-family="serif" font-size="58" font-weight="bold" font-style="italic" fill="#0284c7">℞</text>
-    <line x1="160" y1="425" x2="160" y2="745" stroke="#f1f5f9" stroke-width="2"/>
-
-    <text x="180" y="455" font-family="sans-serif" font-size="22" font-weight="900" fill="#0f172a">${escapeXml(data.medicineName)}</text>
-    <text x="180" y="480" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0284c7">DISPENSE AS WRITTEN · TEMPERATURE CONTROLLED BIOLOGIC</text>
-
-    <text x="180" y="520" font-family="sans-serif" font-size="13" font-weight="bold" fill="#334155">DIRECTIONS FOR USE / SIG:</text>
-    <rect x="180" y="535" width="535" height="75" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="195" y="565" font-family="sans-serif" font-size="14" font-weight="500" fill="#1e293b">${escapeXml(data.dosageInstructions)}</text>
-    <text x="195" y="590" font-family="sans-serif" font-size="11" fill="#64748b">Storage Protocol: Refrigerated Cold-Chain 2°C to 8°C. Protect from light.</text>
-
-    <rect x="180" y="630" width="250" height="55" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
-    <text x="195" y="652" font-family="sans-serif" font-size="11" font-weight="bold" fill="#166534">QUANTITY TO DISPENSE</text>
-    <text x="195" y="674" font-family="sans-serif" font-size="18" font-weight="900" fill="#14532d">${escapeXml(String(data.quantityPrescribed))} Units / Pack</text>
-
-    <rect x="465" y="630" width="250" height="55" rx="8" fill="#f0f9ff" stroke="#bae6fd"/>
-    <text x="480" y="652" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0369a1">AUTHORIZED REFILLS</text>
-    <text x="480" y="674" font-family="sans-serif" font-size="18" font-weight="900" fill="#0c4a6e">${escapeXml(String(data.refillsAuthorized))} Refill(s)</text>
-
-    <rect x="180" y="700" width="535" height="45" rx="8" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="195" y="722" font-family="sans-serif" font-size="11" font-weight="bold" fill="#92400e">REGULATORY SECURITY CLAUSE:</text>
-    <text x="195" y="736" font-family="sans-serif" font-size="10" fill="#b45309">Dispensing requires tamper-evident packaging and continuous cold-chain telemetry validation.</text>
-
-    <rect x="60" y="790" width="680" height="155" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
-    
-    <rect x="80" y="810" width="380" height="115" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-    <text x="95" y="830" font-family="sans-serif" font-size="10" font-weight="bold" fill="#64748b">AUTHORIZED PHYSICIAN ELECTRONIC SIGNATURE</text>
-    <text x="95" y="875" font-family="serif" font-style="italic" font-size="28" font-weight="bold" fill="#1e3a8a">${escapeXml(data.digitalSignature || data.doctorName)}</text>
-    <text x="95" y="905" font-family="monospace" font-size="9" fill="#0369a1">DIGITALLY VERIFIED VIA PKI-SHA256 · CERTIFIED LICENSED PRESCRIBER</text>
-
-    <circle cx="630" cy="867" r="45" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" stroke-dasharray="3 3"/>
-    <circle cx="630" cy="867" r="38" fill="#ffffff" stroke="#16a34a" stroke-width="1"/>
-    <text x="630" y="855" font-family="sans-serif" font-size="9" font-weight="bold" fill="#15803d" text-anchor="middle">BOARD CERTIFIED</text>
-    <text x="630" y="872" font-family="sans-serif" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">AUTHORIZED</text>
-    <text x="630" y="888" font-family="sans-serif" font-size="8" font-weight="bold" fill="#15803d" text-anchor="middle">DISPENSE PERMITTED</text>
-
-    <text x="400" y="975" font-family="sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">This digital prescription is legally binding and issued through the MediReach certified pharmaceutical network.</text>
-    <text x="400" y="990" font-family="monospace" font-size="9" fill="#94a3b8" text-anchor="middle">SECURE AUDIT RECORD · MEDIREACH TELE-RX PROTOCOL</text>
-  </svg>`;
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-}
-
-// Doctor Direct E-Prescription Issuing Endpoint
-app.post('/api/prescriptions/doctor-issue', (req, res) => {
-  const {
-    doctorName,
-    clinicHospital,
-    licenseRegNo,
-    deaNumber,
-    customerId,
-    customerName,
-    customerEmail,
-    diagnosis,
-    medicineId,
-    medicineName,
-    dosageInstructions,
-    quantityPrescribed,
-    refillsAuthorized,
-    digitalSignature,
-    notes,
-  } = req.body;
-
-  if (!doctorName || !clinicHospital || !licenseRegNo || !medicineName || !dosageInstructions) {
-    res.status(400).json({ error: 'Physician name, hospital, license number, medicine, and dosage instructions are required.' });
-    return;
-  }
-
-  // Target customer: find existing Sarah Jenkins or user by ID/email
-  const existingUser = db.getRaw().users.find((u) => u.id === customerId || (customerEmail && u.email.toLowerCase() === String(customerEmail).toLowerCase()))
-    || db.getRaw().users.find((u) => u.role === 'customer');
-
-  const customerIdFinal = existingUser ? existingUser.id : 'user_customer_01';
-  const customerNameFinal = existingUser ? existingUser.name : (customerName || 'Sarah Jenkins');
-  const customerEmailFinal = existingUser ? existingUser.email : (customerEmail || 'customer.sarah@example.com');
-  const customerPhoneFinal = existingUser ? existingUser.phone : '+1 (555) 234-5678';
-  const auditUser = existingUser || {
-    id: customerIdFinal,
-    name: customerNameFinal,
-    role: 'customer' as const,
-  };
-
-  const rxId = 'RX-DOC-' + Math.floor(100000 + Math.random() * 900000);
-  const issueDate = new Date().toISOString().split('T')[0];
-  const qty = Number(quantityPrescribed) || 2;
-  const refills = Number(refillsAuthorized) || 1;
-
-  const svgDoc = generatePrescriptionSvg({
-    rxId,
-    doctorName: String(doctorName).trim(),
-    clinicHospital: String(clinicHospital).trim(),
-    licenseRegNo: String(licenseRegNo).trim(),
-    deaNumber: deaNumber ? String(deaNumber).trim() : 'DEA-EXEMPT-ORPHAN',
-    customerName: customerNameFinal,
-    diagnosis: diagnosis ? String(diagnosis).trim() : 'Specialized Biologic Indication',
-    medicineName: String(medicineName).trim(),
-    dosageInstructions: String(dosageInstructions).trim(),
-    quantityPrescribed: qty,
-    refillsAuthorized: refills,
-    issueDate,
-    digitalSignature: digitalSignature ? String(digitalSignature).trim() : String(doctorName).trim(),
-  });
-
-  const newRx: Prescription = {
-    id: rxId,
-    customerId: customerIdFinal,
-    customerName: customerNameFinal,
-    customerEmail: customerEmailFinal,
-    customerPhone: customerPhoneFinal,
-    medicineIds: medicineId ? [medicineId] : [],
-    documentName: `Official_eRx_${String(medicineName).replace(/[^a-zA-Z0-9]/g, '_')}_${rxId}.svg`,
-    documentUrl: svgDoc,
-    fileType: 'image/svg+xml',
-    doctorName: String(doctorName).trim(),
-    clinicHospital: String(clinicHospital).trim(),
-    licenseRegNo: String(licenseRegNo).trim(),
-    deaNumber: deaNumber ? String(deaNumber).trim() : undefined,
-    issueDate,
-    status: 'Approved', // Pre-authorized by registered specialist physician
-    isDigitalEPrescription: true,
-    diagnosis: diagnosis ? String(diagnosis).trim() : undefined,
-    prescribedMedicineName: String(medicineName).trim(),
-    dosageInstructions: String(dosageInstructions).trim(),
-    quantityPrescribed: qty,
-    refillsAuthorized: refills,
-    digitalSignature: digitalSignature ? String(digitalSignature).trim() : String(doctorName).trim(),
-    notes: notes || 'Digitally transmitted doctor e-prescription via MediReach Tele-Health prescriber gateway.',
-    verifiedByStaffName: 'Board Certified Physician Auto-Verification',
-    verifiedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-  };
-
-  db.getRaw().prescriptions.unshift(newRx);
-
-  // Notify customer
-  db.addNotification(
-    customerIdFinal,
-    'customer',
-    'New Doctor E-Prescription Received',
-    `${doctorName} has issued an official digital e-prescription for ${medicineName}. Your prescription is verified and ready for ordering.`,
-    'prescription'
-  );
-
-  // Notify staff
-  db.addNotification(
-    'all_staff',
-    'staff',
-    'New Doctor E-Rx Transmitted',
-    `${doctorName} issued direct digital prescription #${rxId} for patient ${customerNameFinal}.`,
-    'prescription'
-  );
-
-  db.addAuditLog(
-    auditUser,
-    'DOCTOR_E_RX_ISSUED',
-    'prescription',
-    `Physician ${doctorName} (Lic: ${licenseRegNo}) issued e-prescription ${rxId} for ${customerNameFinal}.`
-  );
-
-  db.persist();
-
-  res.status(201).json({
-    success: true,
-    message: `Official Doctor e-Prescription #${rxId} generated and digitally transmitted to patient ${customerNameFinal}.`,
-    prescription: newRx,
-  });
-});
-
 // Orders
 app.get('/api/customer/orders', authenticate, requireRole(['customer']), (req, res) => {
   const user = (req as any).user;
@@ -833,7 +587,7 @@ app.post('/api/customer/orders', authenticate, requireRole(['customer']), (req, 
     user.id,
     'customer',
     `Order Confirmed: ${newOrder.orderNumber}`,
-    `We have received your order of $${total.toFixed(2)}. Licensed pharmacists will prepare your cold-chain shipment.`,
+    `We have received your order of ₱${total.toFixed(2)}. Licensed pharmacists will prepare your cold-chain shipment.`,
     'order',
     `/orders/${newOrder.id}`
   );
@@ -846,7 +600,7 @@ app.post('/api/customer/orders', authenticate, requireRole(['customer']), (req, 
     'order'
   );
 
-  db.addAuditLog(user, 'ORDER_PLACED', 'order', `Placed order #${newOrder.orderNumber} ($${total.toFixed(2)})`);
+  db.addAuditLog(user, 'ORDER_PLACED', 'order', `Placed order #${newOrder.orderNumber} (₱${total.toFixed(2)})`);
   db.persist();
 
   res.status(201).json({ order: newOrder });
@@ -905,7 +659,7 @@ app.post('/api/customer/orders/:id/cancel', authenticate, requireRole(['customer
     user.id,
     'customer',
     `Order ${order.orderNumber} Cancelled`,
-    `Your order has been cancelled and sandbox refund of $${order.total.toFixed(2)} processed.`,
+    `Your order has been cancelled and sandbox refund of ₱${order.total.toFixed(2)} processed.`,
     'order'
   );
 

@@ -270,7 +270,7 @@ export const MedicineCatalog: React.FC<Props> = ({ initialSearch = '', onSelectM
                 <div>
                   <span className="text-[10px] text-slate-400 block">Unit Price</span>
                   <span className="text-base font-extrabold text-slate-900 tabular-nums">
-                    ${med.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ₱{med.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

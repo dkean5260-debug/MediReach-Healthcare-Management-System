@@ -342,7 +342,7 @@ export const CustomerHome: React.FC<Props> = ({ onNavigate, onSelectMedicine, on
                   <div>
                     <span className="text-[10px] text-slate-400 block">Pharmacy Price</span>
                     <span className="text-base font-extrabold text-slate-900 tabular-nums">
-                      ${med.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      ₱{med.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                   <button
