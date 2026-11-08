@@ -1,0 +1,6 @@
+{
+  "name": "MediReach – Rare Medicines, Closer to You",
+  "description": "Specialized pharmaceutical care, rare medicine ordering, prescription verification, inventory management, and cold-chain delivery tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
