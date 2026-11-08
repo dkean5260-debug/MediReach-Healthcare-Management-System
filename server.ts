@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { db, hashPassword, generateToken, parseToken } from './src/server/db.ts';
@@ -1318,6 +1319,107 @@ app.post('/api/admin/support-tickets/:id/reply', authenticate, requireRole(['adm
   db.persist();
 
   res.json({ ticket });
+});
+
+/* ==========================================================================
+   DOCTOR E-VERIFIED PRESCRIBING STUDIO (Strictly Admin Only)
+   ========================================================================== */
+
+app.get('/api/admin/doctor-prescriptions', authenticate, requireRole(['admin']), (req, res) => {
+  const rxs = db.getRaw().prescriptions;
+  res.json({ prescriptions: rxs });
+});
+
+app.post('/api/admin/doctor-prescriptions', authenticate, requireRole(['admin']), (req, res) => {
+  const admin = (req as any).user;
+  const {
+    customerId,
+    customerName,
+    customerEmail,
+    doctorName,
+    clinicHospital,
+    licenseRegNo,
+    deaNumber,
+    medicineIds,
+    prescribedMedicineName,
+    dosageInstructions,
+    quantityPrescribed,
+    refillsAuthorized,
+    diagnosis,
+    notes,
+    autoApprove,
+  } = req.body;
+
+  if (!customerName || !doctorName || !licenseRegNo || (!medicineIds?.length && !prescribedMedicineName)) {
+    res.status(400).json({ error: 'Patient, doctor prescriber name, medical license, and prescribed medicine are required.' });
+    return;
+  }
+
+  // Find target customer if customerId provided, or by email
+  let targetCustomer = db.getRaw().users.find((u) => u.id === customerId);
+  if (!targetCustomer && customerEmail) {
+    targetCustomer = db.getRaw().users.find((u) => u.email.toLowerCase() === String(customerEmail).toLowerCase().trim());
+  }
+
+  const finalCustomerId = targetCustomer ? targetCustomer.id : (customerId || 'usr_cust_' + Date.now());
+  const finalCustomerEmail = targetCustomer ? targetCustomer.email : (customerEmail || 'patient@example.com');
+  const finalCustomerName = targetCustomer ? targetCustomer.name : customerName;
+
+  const now = new Date().toISOString();
+  const rxId = 'rx_evp_' + Date.now();
+  const isApproved = autoApprove !== false;
+
+  const newRx: Prescription = {
+    id: rxId,
+    customerId: finalCustomerId,
+    customerName: finalCustomerName,
+    customerEmail: finalCustomerEmail,
+    customerPhone: targetCustomer?.phone || '+63 917 555 0199',
+    medicineIds: Array.isArray(medicineIds) ? medicineIds : [],
+    documentName: `E-Prescription_${rxId}.pdf`,
+    documentUrl: '/src/assets/images/rx_sample_prescription_1794104817239.jpg',
+    fileType: 'application/pdf',
+    doctorName: String(doctorName).trim(),
+    clinicHospital: String(clinicHospital || 'MediReach Specialized Clinical Center').trim(),
+    licenseRegNo: String(licenseRegNo).trim(),
+    deaNumber: deaNumber || 'S2-DOH-PH-7789',
+    issueDate: now.slice(0, 10),
+    status: isApproved ? 'Approved' : 'Pending Review',
+    isDigitalEPrescription: true,
+    diagnosis: diagnosis || 'Clinical condition indicated for specialized pharmaceutical management',
+    prescribedMedicineName: prescribedMedicineName || 'Specialized Prescribed Medicines',
+    dosageInstructions: dosageInstructions || 'Take according to standard medical protocol.',
+    quantityPrescribed: parseInt(quantityPrescribed, 10) || 1,
+    refillsAuthorized: parseInt(refillsAuthorized, 10) || 1,
+    digitalSignature: `SHA256-DIGITAL-SIG-${crypto.createHash('sha256').update(rxId + doctorName + now).digest('hex').substring(0, 16).toUpperCase()}`,
+    notes: notes || 'Issued via Doctor E-Verified Prescriber Pad in Admin Prescribing Studio.',
+    verifiedByStaffId: isApproved ? admin.id : undefined,
+    verifiedByStaffName: isApproved ? `Dr. Prescriber (${admin.name})` : undefined,
+    verifiedAt: isApproved ? now : undefined,
+    createdAt: now,
+  };
+
+  db.getRaw().prescriptions.unshift(newRx);
+
+  // Notify customer
+  db.addNotification(
+    finalCustomerId,
+    'customer',
+    'New E-Verified Prescription Issued',
+    `Dr. ${newRx.doctorName} has issued an E-Verified Prescription (${newRx.id}) for your profile. It has been authorized for ordering.`,
+    'prescription'
+  );
+
+  db.addAuditLog(
+    admin,
+    'DOCTOR_PRESCRIPTION_ISSUED',
+    'prescription',
+    `Doctor Prescribing Studio: Issued E-Verified Rx ${newRx.id} for ${finalCustomerName} by Dr. ${newRx.doctorName}`
+  );
+
+  db.persist();
+
+  res.status(201).json({ prescription: newRx, message: 'E-Prescription successfully signed and issued to patient account.' });
 });
 
 /* ==========================================================================

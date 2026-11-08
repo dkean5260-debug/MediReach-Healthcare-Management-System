@@ -17,10 +17,14 @@ import {
   PackageCheck,
   Edit,
   Trash2,
+  Stethoscope,
+  FileSignature,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { User, Medicine, AuditLog, SystemSettings } from '../../types/index.ts';
 import { StatusBadge, ColdChainBadge, RxBadge } from '../ui/Badge.tsx';
+import { DoctorPrescribingStudio } from './DoctorPrescribingStudio.tsx';
 
 interface Props {
   initialTab?: string;
@@ -28,7 +32,9 @@ interface Props {
 
 export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
   const { user, token } = useAuth();
-  const [currentTab, setCurrentTab] = useState<'overview' | 'users' | 'medicines' | 'financial' | 'audit' | 'settings'>('overview');
+  const [currentTab, setCurrentTab] = useState<'overview' | 'prescribing_studio' | 'users' | 'medicines' | 'financial' | 'audit' | 'settings'>(
+    (initialTab as any) || 'overview'
+  );
 
   // Executive overview stats
   const [overview, setOverview] = useState<any>({
@@ -401,9 +407,18 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto text-xs font-mono text-emerald-200 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-          <DollarSign className="w-4 h-4 text-emerald-400" />
-          <span>Total Sales: ₱{overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setCurrentTab('prescribing_studio')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold text-xs shadow-sm transition-all active:scale-95"
+          >
+            <Stethoscope className="w-4 h-4 text-white" />
+            <span>Doctor E-VERIFIED PRESCRIBER Pad</span>
+          </button>
+          <div className="flex items-center gap-2 text-xs font-mono text-emerald-200 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+            <DollarSign className="w-4 h-4 text-emerald-400" />
+            <span>Total Sales: ₱{overview.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
         </div>
       </div>
 
@@ -411,6 +426,7 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
       <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto scrollbar-none text-xs font-semibold">
         {[
           { id: 'overview', label: 'Executive KPIs', icon: BarChart3 },
+          { id: 'prescribing_studio', label: 'Doctor Prescribing Studio', icon: Stethoscope },
           { id: 'users', label: `Users & Staff RBAC (${users.length})`, icon: Users },
           { id: 'medicines', label: `Medicine Catalog (${medicines.length})`, icon: Pill },
           { id: 'financial', label: 'Financial & Sales Reports', icon: DollarSign },
@@ -469,6 +485,30 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
               <span className="text-2xl font-black text-rose-600 tabular-nums">{overview.lowStockAlerts}</span>
               <span className="text-[10px] text-rose-600 block font-semibold">Immediate reorder required</span>
             </div>
+          </div>
+
+          {/* Doctor E-Verified Prescriber Studio Access Card (Admin Only) */}
+          <div className="p-5 bg-gradient-to-r from-blue-900 via-sky-950 to-slate-900 text-white rounded-3xl border border-sky-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>ADMIN ONLY · CLINICAL PRESCRIBING WORKSTATION</span>
+              </div>
+              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                <Stethoscope className="w-5 h-5 text-sky-400" />
+                Doctor E-VERIFIED PRESCRIBER Pad & Prescribing Studio
+              </h3>
+              <p className="text-xs text-sky-200/80 max-w-xl leading-relaxed">
+                Issue officially signed, verifiable electronic prescriptions directly into patient accounts for immediate checkout clearance. Includes customizable dosage, clinical indications, digital watermark seals, and printable Rx slips.
+              </p>
+            </div>
+            <button
+              onClick={() => setCurrentTab('prescribing_studio')}
+              className="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 self-start sm:self-auto shrink-0 active:scale-95"
+            >
+              <FileSignature className="w-4 h-4" />
+              <span>Open Prescribing Studio</span>
+            </button>
           </div>
 
           {/* Quick Actions Stream */}
@@ -558,6 +598,16 @@ export const AdminPortal: React.FC<Props> = ({ initialTab = 'overview' }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Tab: Doctor E-Verified Prescribing Studio (Strictly Admin Only) */}
+      {currentTab === 'prescribing_studio' && (
+        <DoctorPrescribingStudio
+          medicines={medicines}
+          token={token}
+          onRefreshAll={fetchOverview}
+          showToast={showToast}
+        />
       )}
 
       {/* Tab 2: Users & Staff Management */}

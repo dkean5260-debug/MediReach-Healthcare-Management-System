@@ -173,6 +173,14 @@ export const Header: React.FC<Props> = ({
                 Executive Dashboard
               </button>
               <button
+                onClick={() => setActiveTab('admin_prescribing')}
+                className={`transition-colors whitespace-nowrap shrink-0 hover:text-sky-600 ${
+                  activeTab === 'admin_prescribing' ? 'text-sky-600 font-semibold' : ''
+                }`}
+              >
+                Doctor Prescribing Studio
+              </button>
+              <button
                 onClick={() => setActiveTab('admin_users')}
                 className={`transition-colors whitespace-nowrap shrink-0 hover:text-sky-600 ${
                   activeTab === 'admin_users' ? 'text-sky-600 font-semibold' : ''
@@ -327,16 +335,28 @@ export const Header: React.FC<Props> = ({
                       </button>
                     )}
                     {user.role === 'admin' && (
-                      <button
-                        onClick={() => {
-                          setShowRoleMenu(false);
-                          setActiveTab('admin_dashboard');
-                        }}
-                        className="w-full px-3.5 py-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2"
-                      >
-                        <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Admin Dashboard</span>
-                      </button>
+                      <>
+                        <button
+                          onClick={() => {
+                            setShowRoleMenu(false);
+                            setActiveTab('admin_dashboard');
+                          }}
+                          className="w-full px-3.5 py-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                        >
+                          <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Admin Dashboard</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowRoleMenu(false);
+                            setActiveTab('admin_prescribing');
+                          }}
+                          className="w-full px-3.5 py-2 text-left text-xs font-medium text-sky-700 hover:bg-sky-50 flex items-center gap-2"
+                        >
+                          <Stethoscope className="w-3.5 h-3.5 text-sky-600" />
+                          <span>Doctor Prescribing Studio</span>
+                        </button>
+                      </>
                     )}
                   </div>
 

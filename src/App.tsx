@@ -190,6 +190,7 @@ function MediReachMain() {
 
                 {/* Admin Views */}
                 {activeTab === 'admin_dashboard' && <AdminPortal initialTab="overview" />}
+                {activeTab === 'admin_prescribing' && <AdminPortal initialTab="prescribing_studio" />}
                 {activeTab === 'admin_users' && <AdminPortal initialTab="users" />}
                 {activeTab === 'admin_medicines' && <AdminPortal initialTab="medicines" />}
                 {activeTab === 'admin_reports' && <AdminPortal initialTab="financial" />}
